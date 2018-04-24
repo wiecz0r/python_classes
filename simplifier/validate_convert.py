@@ -36,6 +36,8 @@ class Infix_to_RPN:
         
         return output, variables
             
-            
+class Validator:
+    def __init__(self):
+        pass          
 
             

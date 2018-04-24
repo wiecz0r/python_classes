@@ -9,12 +9,12 @@ class QmcC_Simplifier:
     def __binary_possibilities(self,var_no):
         return list(itertools.product([0,1], repeat=var_no))
     
-    def __count_expression(self,val_dict):
+    def count_expression(self,val_dict):
         stack = []
-        exp = self.rpn.copy()
-        for char in exp:
-            if char in val_dict.keys():
-                exp[exp.index(char)] = val_dict[char]
+        for char in self.rpn:
+            if char in [0,1]:
+                stack.append(char)
+            elif char in val_dict.keys():
                 stack.append(val_dict[char])
             
             elif char == '~':
@@ -40,7 +40,7 @@ class QmcC_Simplifier:
     def __all_positive_exp(self, possibilities = []):
         positive = {}
         if len(possibilities) == 0:
-            result = self.__count_expression({})
+            result = self.count_expression({})
             if result:
                 return {'t': None}
             else: return {'f': None}
@@ -49,54 +49,45 @@ class QmcC_Simplifier:
             for elem in possibilities:
                 vals = list(elem)
                 dictionary = dict(zip(self.variables,vals))
-                if self.__count_expression(dictionary):
+                if self.count_expression(dictionary):
                     i = possibilities.index(elem)
                     positive[i] = vals
             return positive
     
-    def __no_of_ones(self,values):
+    def __merge_two_elems(self,el1,el2):
         i = 0
-        for el in values:
-            if el == 1:
+        result = []
+        for k in range(len(el1)):
+            if el1[k] == el2[k]:
+                result += el1[k]
+            else:
                 i += 1
-        return i
+                result += '-'
+            if i == 1: return result
+            else: return False
 
-    def __connect_two(self,element,position):
-        final = element.copy()
-        final[position-1] = '-'
-        return final
-
-    def __diff_one_pos(self,el1,el2):
-        pass
     
     #Main loop of Quine Mcluskey -> reducing values
     def __reduce(self,positive_val_dict):
         dict1 = positive_val_dict.copy()
-        flag = 1
-        while flag:
-            keys_used = []
-            dict2 = {}
-            keys = list(dict1.keys())
-
-            for i in range (0, len(keys)-1):
-                for j in range(i+1,len(keys)):
-                    val1 = dict1[keys[i]]
-                    val2 = dict2[keys[j]]
-                    position = self.__diff_one_pos(val1,val2)
-                    if abs(self.__no_of_ones(val1)-self.__no_of_ones(val2))==1 and position:
-                        if keys[i].__class__ == tuple:
-                            new_key = keys[i]+keys[j]
-                        else: new_key = keys[i], keys[j]
-                        keys_used.append(keys[i]); keys_used.append(keys[j])
-                        del dict1[keys[i]]; del dict1[keys[j]]
-                        dict2[new_key] = self.__connect_two(val1,position)
-                    else: flag = 0
-            for key in dict1.keys():
-                if key not in keys_used:
-                    dict2[key] = dict1[key]
-            dict1 = dict2
-
-        return dict1   
+        result_dict = {}
+        recursion = False
+        for key1, val1 in dict1.items():
+            flag = False
+            for key2, val2 in dict1.items():
+                merged = self.__merge_two_elems(val1,val2)
+                if merged:
+                    if key1.__class__ == tuple:
+                        new_key = key1 + key2
+                    else: new_key = key1, key2
+                    result_dict[new_key] = merged
+                    del dict1[key1]; del dict1[key2]
+                    flag = recursion = True
+            if not flag:
+                result_dict[key1] = val1
+        if recursion:
+            return self.__reduce(result_dict)
+        return result_dict  
 
     def __last_table(self,reduced_dict,positive_vals):
         pass        
@@ -110,7 +101,7 @@ class QmcC_Simplifier:
         elif len(positive) == 1 and 't' in positive:
             return "True"
 
-        reduced_dict = self.__reduce(positive)
-        return self.__last_table(reduced_dict,positive)
+        return self.__reduce(positive)
+        #return self.__last_table(reduced_dict,positive)
 
 
