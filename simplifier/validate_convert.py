@@ -3,12 +3,38 @@ class Infix_to_RPN:
         self.characters = characters #list
         self.operators = operators #dict
 
+    def validate(self,expr):
+        ops = "".join(self.operators.keys())
+        brackets_count = 0
+        state = True
+        for s in expr:
+            if s == ' ': continue
+            if s == '(':
+                brackets_count+=1
+            elif s == ')':
+                brackets_count-=1
+            if brackets_count < 0: return False
+            if state:
+                if s in self.characters:
+                    state = False
+                elif s in ops.replace('~',')'): return False
+                elif s in '~': pass
+            else:
+                if s in ops.replace('~',''): state = True
+                elif s in self.characters + '(~': return False
+        if brackets_count !=0: return False
+        return not state
+
+    
     def convert(self,expression):
+        if not self.validate(expression):
+            return False
         output = []
         stack = []
         variables = []
 
         for char in expression:
+            if char == ' ': continue
             if char in self.characters:
                 if char in ['0','1']:
                     output.append(int(char))
@@ -35,9 +61,4 @@ class Infix_to_RPN:
             output.append(stack.pop())
         
         return output, variables
-            
-class Validator:
-    def __init__(self):
-        pass          
-
             

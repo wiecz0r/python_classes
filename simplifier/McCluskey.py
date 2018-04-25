@@ -29,7 +29,7 @@ class QmcC_Simplifier:
                 elif char == '^':
                     stack.append(x ^ y)
                 elif char == '>':
-                    stack.append((not y) or x)
+                    stack.append((not x) or y)
                 elif char == '&':
                     stack.append(x and y)
                 elif char == '=':
@@ -59,47 +59,61 @@ class QmcC_Simplifier:
         result = []
         for k in range(len(el1)):
             if el1[k] == el2[k]:
-                result += el1[k]
+                result.append(el1[k])
             else:
                 i += 1
-                result += '-'
-            if i == 1: return result
-            else: return False
+                result.append('-')
+        if i == 1: return result
+        else: return False
 
     
     #Main loop of Quine Mcluskey -> reducing values
     def __reduce(self,positive_val_dict):
         dict1 = positive_val_dict.copy()
-        result_dict = {}
-        recursion = False
-        for key1, val1 in dict1.items():
-            flag = False
-            for key2, val2 in dict1.items():
-                merged = self.__merge_two_elems(val1,val2)
-                if merged:
-                    if key1.__class__ == tuple:
-                        new_key = key1 + key2
-                    else: new_key = key1, key2
-                    result_dict[new_key] = merged
-                    del dict1[key1]; del dict1[key2]
-                    flag = recursion = True
-            if not flag:
-                result_dict[key1] = val1
-        if recursion:
-            return self.__reduce(result_dict)
+        result_dict = dict1.copy()
+        flag = True
+        used_keys = set()
+        while(flag):
+            dict2 = {}
+            keys=list(dict1.keys())
+            flag=False
+            for i in range(0,len(keys)):
+                for j in range(i+1,len(keys)):
+                    key1=keys[i]; key2=keys[j]
+                    val1=dict1[key1]; val2=dict1[key2]
+                    #if key1 in used_keys and key2 in used_keys: continue
+                    merged = self.__merge_two_elems(val1,val2)
+                    if merged:
+                        if merged in dict2.values():
+                            used_keys.add(key1); used_keys.add(key2)
+                            continue
+                        flag = True
+                        if key1.__class__ == tuple:
+                            new_key = key1 + key2
+                        else:
+                            new_key = key1, key2
+                        result_dict[new_key] = merged
+                        dict2[new_key] = merged
+                        used_keys.add(key1); used_keys.add(key2)
+            for key in used_keys: 
+                del result_dict[key]
+            used_keys = set()
+            dict1 = dict2
         return result_dict  
 
     def __last_table(self,reduced_dict,positive_vals):
         pass        
 
-    def __simplify(self):
+    def simplify(self):
         all_possibilites = self.__binary_possibilities(len(self.variables))
         positive = self.__all_positive_exp(all_possibilites)
 
+        if (len(positive.items()) == len(self.variables)**2): return True
+        if (len(positive.items())==0): return False
         if (len(positive) == 1 and 'f' in positive) or len(positive) == 0:
-            return "False"
+            return False
         elif len(positive) == 1 and 't' in positive:
-            return "True"
+            return True
 
         return self.__reduce(positive)
         #return self.__last_table(reduced_dict,positive)
