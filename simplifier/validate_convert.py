@@ -1,9 +1,15 @@
 class Infix_to_RPN:
     def __init__(self,characters,operators):
+        '''
+            Constructor
+        '''
         self.characters = characters #list
         self.operators = operators #dict
 
     def validate(self,expr):
+        '''
+            Checks if expression is correct
+        '''
         ops = "".join(self.operators.keys())
         brackets_count = 0
         state = True
@@ -27,6 +33,9 @@ class Infix_to_RPN:
 
     
     def convert(self,expression):
+        '''
+            Converting infix to postfix (RPN)
+        '''
         if not self.validate(expression):
             return False
         output = []
