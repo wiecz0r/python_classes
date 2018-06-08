@@ -1,4 +1,6 @@
 from PIL import Image, ImageDraw
+from matplotlib.pyplot import imshow
+
 
 
 class Figure:
@@ -75,6 +77,7 @@ class Img:
         return self._image
 
     def show(self):
+        #imshow(self._image)
         self._image.show("My image")
 
     @property
