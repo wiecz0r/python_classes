@@ -1,0 +1,49 @@
+{% extends "forum/base.html" %}
+{% block content %}
+    <div class="subpage-header" style="margin-bottom: 15px"><h2>Thread: <i>"{{ thread }}"</i></h2>
+        <ul class="pagination justify-content-center">
+            <li class="page-item"><a class="page-link" href="../">&laquo; Come back to threads</a></li>
+        </ul>
+    </div>
+    {% if posts %}
+        {% for post in posts %}
+            <div class="card" style="width: 96%;margin-left: 2%;background-color: whitesmoke">
+                <div class="card-body">
+                    <h4 class="card-title">{{ post.user_id.username }}</h4>
+                    <h6 class="card-subtitle mb-2 text-muted"><i>posted on {{ post.pub_date }}</i></h6>
+                    <p class="card-text">{{ post.text }}</p>
+                    {% if post.user_id.username == user.username %}
+                        <a href="../../delete/post-{{ post.id }}" class="card-link">Delete</a>
+                    {% endif %}
+                </div>
+            </div>
+        {% endfor %}
+        <br>
+    {% else %}
+        <p class="err1">No posts available</p>
+        <br>
+    {% endif %}
+    {% if user.is_authenticated %}
+        <form method="post">
+            {% csrf_token %}
+            <p style="text-align: center">New message:<br>
+                {{ form.text }}<br>
+                <button type="submit" class="btn btn-success" style="width: 50rem;">Post</button>
+            </p>
+        </form>
+    {% else %}
+        <form action="/login/" class="mybtn">
+            <button type="Submit" class="btn btn-primary">Login</button>
+        </form>
+
+    {% endif %}
+    {% if user.is_authenticated %}
+        <form action="/me/" class="mybtn">
+            <button type="submit" class="btn btn-info">My profile</button>
+        </form>
+        <form action="/logout/" class="mybtn">
+            <button type="submit" class="btn btn-danger">Logout</button>
+        </form>
+    {% endif %}
+{% endblock content %}
+

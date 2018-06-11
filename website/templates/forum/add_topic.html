@@ -1,0 +1,9 @@
+{% extends "forum/base.html" %}
+{% block content %}
+    <div class="subpage-header"><h2>New Topic</h2></div>
+    <form action="" method="post" style="width: 50%;margin: 0 auto;text-align: center">
+        {% csrf_token %}
+        <br>{{ form.name }}<br>
+        <button type="submit" class="btn btn-primary mybtn1">Submit</button>
+    </form>
+{% endblock content %}

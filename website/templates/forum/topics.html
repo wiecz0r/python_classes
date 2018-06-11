@@ -1,0 +1,40 @@
+{% extends "forum/base.html" %}
+{% block content %}
+    <div class="subpage-header"><h2>Topics:</h2></div>
+    {% if sorted_topics %}
+        <div class="list-group">
+            {% for topic in sorted_topics %}
+                {% if topic.user_id.username == user.username %}
+                    <form action="delete/topic-{{ topic.id }}">
+                        <button type="submit" class="btn btn-light">Delete</button>
+                    </form>
+                {% endif %}
+                <a href="{{ topic.id }}" class="list-group-item">
+                    <h4 class="list-group-item-heading">{{ topic }}</h4>
+                    <p class="list-group-item-text">Created: {{ topic.timestamp }}<br> by <b>{{ topic.user_id }}</b>
+                    </p>
+                </a>
+                <br>
+            {% endfor %}
+        </div>
+        <br>
+    {% else %}
+        <p class="err1">No Topics available</p>
+        <br>
+    {% endif %}
+    <form action="add_topic/" class="mybtn">
+        <button type="submit" class="btn btn-success " style="width: 30%">Add new topic</button>
+    </form>
+    {% if user.is_authenticated %}
+        <form action="/me/" class="mybtn">
+            <button type="submit" class="btn btn-info">My profile</button>
+        </form>
+        <form action="/logout/" class="mybtn">
+            <button type="submit" class="btn btn-danger">Logout</button>
+        </form>
+    {% else %}
+        <form action="/login/" class="mybtn">
+            <button type="Submit" class="btn btn-primary">Login</button>
+        </form>
+    {% endif %}
+{% endblock content %}

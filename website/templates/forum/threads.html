@@ -1,0 +1,44 @@
+{% extends "forum/base.html" %}
+{% block content %}
+    <div class="subpage-header"><h2><i>"{{ topic_name }}"</i> threads:</h2>
+        <ul class="pagination justify-content-center">
+            <li class="page-item"><a class="page-link" href="../">&laquo; Come back to topics</a></li>
+        </ul>
+    </div>
+    {% if threads %}
+        <div class="list-group">
+            {% for thread in threads %}
+                {% if thread.user_id.username == user.username %}
+                    <form action="../delete/thread-{{ thread.id }}">
+                        <button type="submit" class="btn btn-light">Delete</button>
+                    </form>
+                {% endif %}
+                <a href="{{ thread.id }}" class="list-group-item">
+                    <h4 class="list-group-item-heading">{{ thread }}</h4>
+                    <p class="list-group-item-text">Created: {{ thread.timestamp }}<br> by <b>{{ thread.user_id }}</b>
+                    </p>
+                </a>
+                <br>
+            {% endfor %}
+        </div>
+        <br>
+    {% else %}
+        <p class="err1">No Threads available</p>
+        <br>
+    {% endif %}
+    <form action="add_thread/" class="mybtn">
+        <button type="submit" class="btn btn-success " style="width: 30%">Add new thread</button>
+    </form>
+    {% if user.is_authenticated %}
+        <form action="/me/" class="mybtn">
+            <button type="submit" class="btn btn-info">My profile</button>
+        </form>
+        <form action="/logout/" class="mybtn">
+            <button type="submit" class="btn btn-danger">Logout</button>
+        </form>
+    {% else %}
+        <form action="/login/" class="mybtn">
+            <button type="Submit" class="btn btn-primary">Login</button>
+        </form>
+    {% endif %}
+{% endblock content %}

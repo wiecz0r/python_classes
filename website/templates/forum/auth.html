@@ -1,0 +1,24 @@
+{% extends "forum/base.html" %}
+{% block content %}
+    <div class="subpage-header"><h2>Sign In</h2></div>
+    <form action="" method="post" style="width: 60%;margin: 0 auto;text-align: center">
+        {% csrf_token %}
+        <br>{{ form.username }}
+        <br>{{ form.password }}
+        <br>
+        <input type="hidden" value="{{ url }}" name="url">
+        <button type="submit" class="btn btn-success mybtn1">Sign in</button>
+    </form>
+
+    <form action="/register/" style="width: 60%;margin: 10px auto;text-align: center">
+        <button type="submit" class="btn btn-warning mybtn1">Sign up</button>
+    </form>
+    <br>
+    {% if logged is not None and logged is True %}
+        <p class="mybtn">Successfully logged in, redirecting to previous page...</p>
+        <meta http-equiv="refresh" content="2;url={{ url }}"/>
+    {% endif %}
+    {% if logged is not None and logged is False %}
+        <p>Wrong password or login, please try again!</p>
+    {% endif %}
+{% endblock content %}

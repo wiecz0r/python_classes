@@ -1,0 +1,15 @@
+{% extends "forum/base.html" %}
+{% block content %}
+    <div class="subpage-header"><h2>Sign up</h2></div>
+    <form action="" method="post" style="text-align: center;width: 50%;margin: 15px auto">
+        {% csrf_token %}
+        {% for field in form %}
+            {{ field }}<br>
+        {% endfor %}
+        <button type="submit" class="btn mybtn1 btn-success">Register</button>
+    </form>
+    {% if logged is True %}
+        <p class="mybtn">Successfully registered and logged in, redirecting to main page...</p>
+        <meta http-equiv="refresh" content="2;url=/"/>
+    {% endif %}
+{% endblock content %}
